@@ -9,5 +9,8 @@
     <string name="first_name_field">First Name</string>
     <string name="last_name_field">Last Name</string>
     <string name="gtid_field">GT ID</string>
+    <string name="first_name_field_hint">e.g. John </string>
+    <string name="last_name_field_hint">e.g. Smith</string>
+    <string name="gtid_field_hint">e.g. 90XXXXXXX (Nine digit Number)</string>
 
 </resources>
