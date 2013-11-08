@@ -127,7 +127,7 @@ public class RequestPage extends JPanel {
 					ResultString = "Invalid request data entered! Visitor is not a student. Please try again.";
 				}
 				JFrame mainFrame = MainFrame.getMain();
-				ResultPage panel = new ResultPage(ResultString);
+				ResultPage panel = new ResultPage(ResultString, currentUser);
 				mainFrame.setContentPane(panel);
 				mainFrame.setBounds(mainFrame.getContentPane()
 						.getBounds());

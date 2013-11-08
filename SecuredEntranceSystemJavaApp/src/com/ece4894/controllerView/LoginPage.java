@@ -39,32 +39,32 @@ public class LoginPage extends JPanel {
 
 	public LoginPage() {
 		this.setLayout(new FlowLayout());
-		setBounds(screenSize.width / 2 - 150, screenSize.height / 2 - 150, 240,
-				400);
+		setBounds(screenSize.width / 2 - 150, screenSize.height / 2 - 150, 220,
+				420);
 
 		CurrentUser = new Resident();
 		this.setBackground(Color.green);
-
+		
 		loginPageLabel = new JLabel("Login Page");
 		loginPageLabel.setFont(new Font("Helvetica", Font.BOLD, 30));
 
 		userNameLabel = new JLabel("Username");
-		userNameTextField = new JTextField(20);
+		userNameTextField = new JTextField(15);
 
 		passwordLabel = new JLabel("Password");
-		passwordTextField = new JTextField(20);
+		passwordTextField = new JTextField(15);
 
 		FirstNameLabel = new JLabel("First Name");
-		FirstNameTextField = new JTextField(20);
+		FirstNameTextField = new JTextField(15);
 
 		LastNameLabel = new JLabel("Last Name");
-		LastNameTextField = new JTextField(20);
+		LastNameTextField = new JTextField(15);
 
 		GTIDLabel = new JLabel("GT ID");
-		GTIDTextField = new JTextField(20);
+		GTIDTextField = new JTextField(15);
 
 		ResidenceHallLabel = new JLabel("Residence Hall");
-		ResidenceHallTextField = new JTextField(20);
+		ResidenceHallTextField = new JTextField(15);
 
 		login = new JButton("Login");
 		login.addActionListener(new LoginButtonListener());
@@ -82,7 +82,6 @@ public class LoginPage extends JPanel {
 		this.add(GTIDTextField);
 		this.add(ResidenceHallLabel);
 		this.add(ResidenceHallTextField);
-
 		this.add(login);
 	}
 
