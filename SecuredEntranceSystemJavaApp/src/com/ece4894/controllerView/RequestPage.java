@@ -91,7 +91,7 @@ public class RequestPage extends JPanel {
 			}
 
 			request.setGTID(GTIDNumber);
-
+			request.setTag(com.ece4894.services.RequestDao.getTagUsingGTID(GTIDNumber));
 			request.setGuestOfGTID(currentUser.getGTID());
 			request.setDateTimeIn(new BigDecimal(new Long(System
 					.currentTimeMillis()).toString()));

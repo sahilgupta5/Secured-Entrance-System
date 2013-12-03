@@ -14,6 +14,7 @@ public class Student {
 	protected String FirstName;
 	protected String LastName;
 	protected Long GTID;
+	protected String Tag;
 
 	public String getFirstName() {
 		return FirstName;
@@ -53,6 +54,14 @@ public class Student {
 
 	public void setPassword(String password) {
 		Password = password;
+	}
+	
+	public String getTag() {
+		return Tag;
+	}
+
+	public void setTag(String tag) {
+		Tag = tag;
 	}
 
 }

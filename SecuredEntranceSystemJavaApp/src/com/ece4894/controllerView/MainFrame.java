@@ -29,7 +29,7 @@ public class MainFrame {
 	}
 
 	public static void main(String[] args) {
-		main = new JFrame("GT Car Rental");
+		main = new JFrame("GT Secured Entrance System");
 		main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		init();
 		main.setBounds(mainPanel.getBounds());

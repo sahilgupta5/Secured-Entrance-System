@@ -21,16 +21,16 @@ public class RequestDao {
 
 		Connection conn = connection.createConnection();
 		try {
-			String statement = "INSERT INTO visitorrequest(RequestNum, GTID, FirstName, LastName, TimeIn, TimeOut, GuestOf) VALUES(?, ?, ?, ?, ?, ?, ?)";
+			String statement = "INSERT INTO visitorrequest(RequestNum, GTID, Tag, FirstName, LastName, TimeIn, TimeOut, GuestOf) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 			PreparedStatement prep = conn.prepareStatement(statement);
 			prep.setInt(1, request.getRequestNumber());
 			prep.setLong(2, request.getGTID());
-			prep.setString(3, request.getFirstName());
-			prep.setString(4, request.getLastName());
-			prep.setBigDecimal(5, request.getDateTimeIn());
-			prep.setBigDecimal(6, request.getDateTimeOut());
-
-			prep.setLong(7, request.getGuestOfGTID());
+			prep.setString(3, request.getTag());
+			prep.setString(4, request.getFirstName());
+			prep.setString(5, request.getLastName());
+			prep.setBigDecimal(6, request.getDateTimeIn());
+			prep.setBigDecimal(7, request.getDateTimeOut());
+			prep.setLong(8, request.getGuestOfGTID());
 			prep.executeUpdate();
 			prep.close();
 			connection.closeConnection(conn);
@@ -59,6 +59,27 @@ public class RequestDao {
 		}
 		connection.closeConnection(conn);
 		return count;
+	}
+	
+	public static String getTagUsingGTID(Long GTID) {
+		DBConnection connection = new DBConnection();
+		String Tag = "";
+
+		Connection conn = connection.createConnection();
+		try {
+			String statement = "SELECT Tag FROM students WHERE GTID=?";
+			PreparedStatement prep = conn.prepareStatement(statement);
+			prep.setLong(1, GTID);
+			ResultSet rs = (ResultSet) prep.executeQuery();
+			while(rs.next()){
+				Tag = rs.getString("Tag");
+			}
+			prep.close();
+			connection.closeConnection(conn);
+		} catch (SQLException e) {
+		}
+		connection.closeConnection(conn);
+		return Tag;
 	}
 
 	public static boolean isRequestValid(VisitorRequest request) {
