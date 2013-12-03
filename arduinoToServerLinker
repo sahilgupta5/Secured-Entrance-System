@@ -1,0 +1,74 @@
+#!/usr/bin/python
+##########################################################################################
+#author: Sahil Gupta
+#This is the ECE4894 server side script to let the visitor or the residents of the 
+#building enter into the building.
+#This script will assume that the secured facility is NORTH AVENUE SOUTH BUILDING OR NAS
+##########################################################################################
+
+SECURED_ENTRANCE_FACILITY = "NAS"
+
+import serial
+import MySQLdb
+import time
+
+#establish connection to MySQL. You'll have to change this for your database.
+dbConn = MySQLdb.connect("localhost","root","ece4894project3#","ece4894project") or die ("could not connect to database")
+#open a cursor to the database
+cursor = dbConn.cursor()
+status = ""
+statusNum = 0
+
+device = '/dev/tty.usbmodem1421' #this will have to be changed to the serial port you are using
+try:
+  print "Trying...",device 
+  arduino = serial.Serial(device, 57600)
+except: 
+  print "Failed to connect on",device    
+ 
+try: 
+  data = arduino.readline()  #read the data from the arduino
+  #Here we are going to insert the data into the Database
+  try:
+    tagString = data[0:6]
+    cursor.execute("SELECT Residence FROM students WHERE Tag=%s", tagString)
+    residenceHall = str(cursor.fetchone())
+    residenceHall = residenceHall[2:5]
+    print residenceHall
+    if residenceHall == SECURED_ENTRANCE_FACILITY:
+      status = "Enter Sire! You are the resident of this amazing facility!"
+      statusNum = 0
+      print status
+    else:
+      cursor.execute("SELECT Tag FROM visitorrequest WHERE Tag=%s", tagString)
+      tagStringVisitor = str(cursor.fetchone())
+      tagStringVisitor = tagStringVisitor[2:8]
+      if tagStringVisitor == "None":
+        statusNum = 1
+        status = "Validation Failed, you are not part of this building!"
+        print status
+      else:
+        #this tells the current time of the request
+        millis = int(round(time.time() * 1000))
+        cursor.execute("SELECT TimeOut FROM visitorrequest WHERE Tag=%s", tagString)
+        timeOut = str(cursor.fetchone())
+        timeOut = int(timeOut[2:14])
+        boolean = ((millis - timeOut)/1000) < 600 & ((millis - timeOut)/1000) > 0
+        print boolean
+        if boolean:
+          statusNum = 2
+          status = "Enter Sire! You are welcome as a visitor into this building!"
+          print status
+        else:
+          statusNum = 3
+          status = "Validation Failed, request time out!"
+    	  print status
+    arduino.writelines(str(statusNum))
+    dbConn.commit() #commit the insert
+    cursor.close()  #close the cursor
+  except MySQLdb.IntegrityError:
+    print "failed to select data"
+  finally:
+    cursor.close()  #close just incase it failed
+except:
+  print "Failed to get data from Arduino!"
