@@ -11,11 +11,12 @@ volatile byte tagID[35];
 volatile int bitCount = 0;
 
 byte mac_addr[] = {0x90, 0xA2, 0xDA, 0x0E, 0xF5, 0xEE}; //MAC address of the ethernet shield
-IPAddress server_addr(127,0,0,1); //IP address of localhost
+byte ip[] = {192,168,137,35};
+IPAddress server_addr(192,168,137,100); //IP address of localhost
 
-char user[] = "root";
-char password[] = "ece4894project3#";
-const char SELECT_QUERY[] = "SELECT ";
+char user[] = "temp";
+char password[] = "password";
+const char SELECT_QUERY[] = "SELECT * FROM test.students";
 
 Connector my_conn;
 
@@ -34,7 +35,7 @@ void ISR_one(void) {
 
 void setup() {
   Serial.begin(57600);
-  //db_connect();
+  db_connect();
   pinMode(holdPin, OUTPUT);
   digitalWrite(holdPin, HIGH);
   
@@ -51,7 +52,7 @@ void loop() {
   if (bitCount > 0 && millis() - lastBitArrivalTime > 250) {
     unsigned long cc_data = parseId();
     Serial.println(cc_data);
-    //int signal = execute_query(cc_data);
+    int signal = execute_query(cc_data);
     bitCount = 0;  
   } 
 }
@@ -59,7 +60,8 @@ void loop() {
 
 int execute_query(unsigned long cc_data) {
   int signal = false;
-  
+    my_conn.cmd_query(SELECT_QUERY);
+    my_conn.show_results();
   
   return signal;
 }
@@ -75,14 +77,13 @@ unsigned long parseId() {
 }
 
 void db_connect() {
-  Ethernet.begin(mac_addr);
+  Ethernet.begin(mac_addr, ip);
   delay(1000);
   Serial.println("Connecting...");
   if (my_conn.mysql_connect(server_addr, 3306, user,password)) {
+    Serial.println("no:(");
     delay(1000);
   } else {
     Serial.println("Connection failed");
   }
 }
-
-
