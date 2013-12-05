@@ -4,6 +4,7 @@
 #include <mysql.h>
 #include <stdlib.h>
 
+
 #define holdPin 7 //blue wire
 
 volatile unsigned long lastBitArrivalTime;
@@ -16,10 +17,12 @@ IPAddress server_addr(192,168,137,100); //IP address of localhost
 
 char user[] = "temp";
 char password[] = "password";
-const char SELECT_QUERY[] = "SELECT * FROM test.students";
+
+char query[128];
+char query2[128];
+
 
 Connector my_conn;
-
 
 void ISR_zero(void) {
   lastBitArrivalTime = millis();
@@ -42,6 +45,7 @@ void setup() {
   attachInterrupt(0,ISR_zero, FALLING);
   attachInterrupt(1,ISR_one, FALLING);
   
+ 
   for(int i =0; i < 35; i++) {
     tagID[i] = 0x00;
   }
@@ -53,6 +57,11 @@ void loop() {
     unsigned long cc_data = parseId();
     Serial.println(cc_data);
     int signal = execute_query(cc_data);
+    if (signal == true) {
+      Serial.println("The door will open!");
+    } else {
+      Serial.println("Wrong ID! Door can't be opened!");
+    }
     bitCount = 0;  
   } 
 }
@@ -60,8 +69,37 @@ void loop() {
 
 int execute_query(unsigned long cc_data) {
   int signal = false;
-    my_conn.cmd_query(SELECT_QUERY);
-    my_conn.show_results();
+  int res_count = 0;
+  int visitor_count = 0;
+  sprintf(query, "SELECT COUNT(*) FROM ece4894project.students Where Residence = \"NAN\" and Tag = \"%lu\";", cc_data);
+  my_conn.cmd_query(query);
+  
+  my_conn.get_columns();
+  row_values *row = NULL;
+  row = my_conn.get_next_row();
+  res_count = atol(row->values[0]);
+  my_conn.free_columns_buffer();
+  my_conn.free_row_buffer();
+  
+  if (res_count == 1) {
+    signal = true;
+  } else {
+    sprintf(query2, "SELECT COUNT(*) FROM ece4894project.visitorrequest WHERE Tag = \"%lu\";", cc_data);
+    my_conn.cmd_query(query2);
+    row_values *row = NULL;
+    row = my_conn.get_next_row();
+    visitor_count = atol(row->values[0]);
+  
+    my_conn.free_columns_buffer();
+    my_conn.free_row_buffer();
+    
+    if (visitor_count == 1) {
+      signal = true;
+    } else {
+      signal = false;
+    }
+
+  }
   
   return signal;
 }
@@ -81,7 +119,6 @@ void db_connect() {
   delay(1000);
   Serial.println("Connecting...");
   if (my_conn.mysql_connect(server_addr, 3306, user,password)) {
-    Serial.println("no:(");
     delay(1000);
   } else {
     Serial.println("Connection failed");
